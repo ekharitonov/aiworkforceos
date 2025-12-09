@@ -6,8 +6,7 @@ HuggingFace Spaces Demo
 
 import gradio as gr
 import os
-from crewai import Agent, Task, Crew
-from langchain_huggingface import HuggingFaceEndpoint, ChatHuggingFace
+from crewai import Agent, Task, Crew, LLM
 from typing import List, Dict, Any, Optional
 
 # Available models from AI Workforce OS collection
@@ -259,17 +258,13 @@ def get_llm(model_id: str = None, api_key: str = None):
 
     model = model_id or DEFAULT_MODEL
 
-    # Create endpoint with proper task specification
-    llm = HuggingFaceEndpoint(
-        repo_id=model,
-        huggingfacehub_api_token=hf_token,
-        task="text-generation",
+    # Use CrewAI's native LLM with HuggingFace provider
+    return LLM(
+        model=f"huggingface/{model}",
+        api_key=hf_token,
         temperature=0.7,
-        max_new_tokens=1024,
+        max_tokens=1024,
     )
-
-    # Wrap in ChatHuggingFace for better compatibility with CrewAI
-    return ChatHuggingFace(llm=llm)
 
 def initialize_agency(model_name: str = None, api_key: str = None):
     """Initialize the content agency with selected model"""
