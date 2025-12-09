@@ -7,7 +7,7 @@ HuggingFace Spaces Demo
 import gradio as gr
 import os
 from crewai import Agent, Task, Crew
-from langchain_huggingface import HuggingFaceEndpoint
+from langchain_huggingface import HuggingFaceEndpoint, ChatHuggingFace
 from typing import List, Dict, Any, Optional
 
 # Available models from AI Workforce OS collection
@@ -259,23 +259,32 @@ def get_llm(model_id: str = None, api_key: str = None):
 
     model = model_id or DEFAULT_MODEL
 
-    return HuggingFaceEndpoint(
+    # Create endpoint with proper task specification
+    llm = HuggingFaceEndpoint(
         repo_id=model,
         huggingfacehub_api_token=hf_token,
+        task="text-generation",
         temperature=0.7,
         max_new_tokens=1024,
     )
+
+    # Wrap in ChatHuggingFace for better compatibility with CrewAI
+    return ChatHuggingFace(llm=llm)
 
 def initialize_agency(model_name: str = None, api_key: str = None):
     """Initialize the content agency with selected model"""
     global agency
     try:
+        if not api_key:
+            return "Error: Please enter your HuggingFace API Key"
+
         model_id = AVAILABLE_MODELS.get(model_name, DEFAULT_MODEL)
-        llm = get_llm(model_id=model_id, api_key=api_key if api_key else None)
+        llm = get_llm(model_id=model_id, api_key=api_key)
         agency = ContentAgency(llm)
-        return f"Agency initialized with {model_id}!"
+        return f"✅ Agency initialized with {model_name}!"
     except Exception as e:
-        return f"Error: {str(e)}"
+        import traceback
+        return f"Error: {str(e)}\n\nDetails: {traceback.format_exc()}"
 
 def create_article_ui(topic, audience, word_count, progress=gr.Progress()):
     """UI wrapper for article creation"""
