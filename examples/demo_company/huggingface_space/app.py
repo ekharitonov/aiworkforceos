@@ -174,7 +174,7 @@ class ContentAgency:
         crew = Crew(
             agents=[self.researcher, self.writer, self.seo, self.qa],
             tasks=[research_task, writing_task, seo_task, qa_task],
-            verbose=2
+            verbose=True
         )
 
         result = crew.kickoff()
@@ -234,7 +234,7 @@ class ContentAgency:
         crew = Crew(
             agents=[self.researcher, self.social, self.qa],
             tasks=[research_task, social_task, qa_task],
-            verbose=2
+            verbose=True
         )
 
         result = crew.kickoff()
