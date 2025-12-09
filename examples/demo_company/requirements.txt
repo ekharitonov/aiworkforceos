@@ -4,11 +4,14 @@
 crewai>=0.28.0
 crewai-tools>=0.2.0
 
-# LLM providers
-langchain-openai>=0.0.5
+# LLM providers - HuggingFace (Open Source)
+langchain-huggingface>=0.0.3
 langchain-community>=0.0.20
 
-# Local models support (optional)
+# Optional: OpenAI support
+# langchain-openai>=0.0.5
+
+# Optional: Local models with Ollama
 # ollama>=0.1.0
 
 # UI and interaction

@@ -9,35 +9,51 @@ Built with Gradio for ease of use.
 import gradio as gr
 import os
 from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
+from langchain_huggingface import HuggingFaceEndpoint
 from workflow import ContentAgency, WORKFLOW_TEMPLATES
 
 # Load environment variables
 load_dotenv()
 
+# Available models from AI Workforce OS collection
+AVAILABLE_MODELS = {
+    "Qwen2.5-3B (Fast, 8GB RAM)": "Qwen/Qwen2.5-3B-Instruct",
+    "Qwen2.5-7B (Recommended)": "Qwen/Qwen2.5-7B-Instruct",
+    "Qwen2.5-14B (High Quality)": "Qwen/Qwen2.5-14B-Instruct",
+    "Qwen2.5-Coder-32B (Best Quality)": "Qwen/Qwen2.5-Coder-32B-Instruct",
+}
+
+DEFAULT_MODEL = "Qwen/Qwen2.5-7B-Instruct"
+
 # Initialize LLM
-def get_llm():
-    """Get configured LLM instance"""
-    api_key = os.getenv('OPENAI_API_KEY')
-    if not api_key:
-        raise ValueError("Please set OPENAI_API_KEY in .env file")
-    
-    return ChatOpenAI(
-        model='gpt-3.5-turbo',
+def get_llm(model_id: str = None, api_key: str = None):
+    """Get configured LLM instance using HuggingFace Inference API"""
+    # Try to get API key from parameter, then environment
+    hf_token = api_key or os.getenv('HUGGINGFACE_API_KEY')
+    if not hf_token:
+        raise ValueError("Please set HUGGINGFACE_API_KEY in Codespaces Secrets or .env file")
+
+    model = model_id or DEFAULT_MODEL
+
+    return HuggingFaceEndpoint(
+        repo_id=model,
+        huggingfacehub_api_token=hf_token,
         temperature=0.7,
-        api_key=api_key
+        max_new_tokens=1024,
     )
 
 # Initialize agency
 agency = None
 
-def initialize_agency():
-    """Initialize the content agency"""
+def initialize_agency(model_name: str = None, api_key: str = None):
+    """Initialize the content agency with selected model"""
     global agency
     try:
-        llm = get_llm()
+        # Get model ID from name
+        model_id = AVAILABLE_MODELS.get(model_name, DEFAULT_MODEL)
+        llm = get_llm(model_id=model_id, api_key=api_key if api_key else None)
         agency = ContentAgency(llm)
-        return "✅ Agency initialized successfully!"
+        return f"✅ Agency initialized with {model_id}!"
     except Exception as e:
         return f"❌ Error: {str(e)}"
 
@@ -160,14 +176,28 @@ def build_interface():
         with gr.Accordion("⚙️ Setup", open=True):
             gr.Markdown("""
             **Before starting:**
-            1. Create a `.env` file in this directory
-            2. Add your OpenAI API key: `OPENAI_API_KEY=your_key_here`
-            3. Click 'Initialize Agency' below
+            1. Set `HUGGINGFACE_API_KEY` in [Codespaces Secrets](https://github.com/settings/codespaces) or enter below
+            2. Select a model from the dropdown
+            3. Click 'Initialize Agency'
+
+            **Models from [AI Workforce OS Collection](https://huggingface.co/collections/ekharitonov/ai-workforce-os-recommended-models)** - 100% Open Source!
             """)
-            
+
+            with gr.Row():
+                model_dropdown = gr.Dropdown(
+                    choices=list(AVAILABLE_MODELS.keys()),
+                    value="Qwen2.5-7B (Recommended)",
+                    label="Select Model"
+                )
+                api_key_input = gr.Textbox(
+                    label="HuggingFace API Key (optional if set in Codespaces Secrets)",
+                    placeholder="hf_xxxxxxxxxx",
+                    type="password"
+                )
+
             init_btn = gr.Button("🚀 Initialize Agency", variant="primary")
             init_output = gr.Textbox(label="Status", interactive=False)
-            init_btn.click(initialize_agency, outputs=init_output)
+            init_btn.click(initialize_agency, inputs=[model_dropdown, api_key_input], outputs=init_output)
         
         gr.Markdown("---")
         
@@ -270,17 +300,18 @@ def build_interface():
         
         gr.Markdown("""
         ---
-        
+
         ### 📊 About This Demo
-        
+
         This is a working prototype of an AI-powered content agency with:
         - **5 AI Agents** with specialized roles
         - **3 Workflows** for different content needs
         - **Autonomous collaboration** between agents
-        
-        **Cost per task:** ~$0.05-0.15 (using GPT-3.5-turbo)
-        
-        **Learn more:** [AI Workforce OS](https://aiworkforceos.org)
+        - **100% Open Source** models from HuggingFace
+
+        **Cost:** FREE with HuggingFace Inference API (rate limits apply)
+
+        **Learn more:** [AI Workforce OS](https://aiworkforceos.org) | [Model Collection](https://huggingface.co/collections/ekharitonov/ai-workforce-os-recommended-models)
         """)
     
     return demo

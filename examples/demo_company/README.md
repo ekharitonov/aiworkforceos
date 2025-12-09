@@ -19,23 +19,50 @@ This is a working prototype of an AI-powered content agency demonstrating the **
 
 ## Quick Start
 
-### 1. Install Dependencies
+### Option A: GitHub Codespaces (Recommended)
+
+**One-click setup - no installation needed!**
+
+1. **Set up HuggingFace API Key** (one time):
+   - Go to [Codespaces Secrets](https://github.com/settings/codespaces)
+   - Click "New secret"
+   - Name: `HUGGINGFACE_API_KEY`
+   - Value: Your token from [HuggingFace Settings](https://huggingface.co/settings/tokens) (Read access is enough)
+   - Select this repository
+
+2. **Launch Codespace**:
+   - Click "Code" → "Codespaces" → "Create codespace"
+
+3. **Run the demo**:
+   ```bash
+   cd examples/demo_company
+   pip install -r requirements.txt
+   python simple_ui.py
+   ```
+
+4. Open the forwarded port (7860) in your browser
+
+---
+
+### Option B: Local Installation
+
+#### 1. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Set Up API Key
+#### 2. Set Up API Key
 
 Create a `.env` file:
 
 ```bash
-OPENAI_API_KEY=your_openai_api_key_here
+HUGGINGFACE_API_KEY=hf_your_token_here
 ```
 
-Get your API key at: https://platform.openai.com
+Get your free API token at: https://huggingface.co/settings/tokens
 
-### 3. Run the UI
+#### 3. Run the UI
 
 ```bash
 python simple_ui.py
@@ -84,10 +111,9 @@ Open in browser: http://localhost:7860
 
 ## Cost Estimates
 
-Using GPT-3.5-turbo:
-- **Article Creation:** ~$0.10-0.15
-- **Social Campaign:** ~$0.05-0.08
-- **Content Optimization:** ~$0.08-0.12
+Using HuggingFace Inference API (Qwen2.5 models):
+- **All workflows:** FREE (with rate limits)
+- Models: [AI Workforce OS Collection](https://huggingface.co/collections/ekharitonov/ai-workforce-os-recommended-models)
 
 Using local models (Ollama):
 - **All workflows:** FREE (runs on your computer)
@@ -212,22 +238,24 @@ For production use:
 
 ## Troubleshooting
 
-### "Please set OPENAI_API_KEY"
-- Create `.env` file with your API key
-- Restart the application
+### "Please set HUGGINGFACE_API_KEY"
+- For Codespaces: Add to [Codespaces Secrets](https://github.com/settings/codespaces)
+- For local: Create `.env` file with your API key
+- Or enter the key directly in the UI
 
 ### "Agency not initialized"
 - Click "Initialize Agency" button in the UI
-- Check that your API key is valid
+- Check that your API key is valid (get one at [HuggingFace](https://huggingface.co/settings/tokens))
 
 ### Slow performance
-- Using GPT-4? Switch to GPT-3.5-turbo
+- Try a smaller model (Qwen2.5-3B)
+- HuggingFace Inference API has rate limits - wait and retry
 - Consider using local models with Ollama
 
-### High costs
-- Reduce word counts
-- Use GPT-3.5-turbo instead of GPT-4
-- Switch to free local models
+### Rate limits
+- HuggingFace free tier has rate limits
+- Wait a few minutes and try again
+- Or use local models with Ollama for unlimited usage
 
 ## Next Steps
 
