@@ -1,0 +1,39 @@
+name: Sync to HuggingFace Space
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'examples/demo_company/huggingface_space/**'
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  sync-to-huggingface:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push to HuggingFace Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          cd examples/demo_company/huggingface_space
+
+          # Configure git
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+
+          # Initialize new repo for HF Space
+          rm -rf .git
+          git init
+          git add .
+          git commit -m "Sync from GitHub: ${{ github.sha }}"
+
+          # Push to HuggingFace
+          git remote add hf https://ekharitonov:$HF_TOKEN@huggingface.co/spaces/ekharitonov/aiworkforceos-demo
+          git push hf main --force
+
+          echo "✅ Successfully synced to HuggingFace Space"
