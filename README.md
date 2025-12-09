@@ -44,6 +44,24 @@ The fastest way to try AI Workforce OS:
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ekharitonov/aiworkforceos/blob/main/examples/colab/AI_Workforce_OS_Basic_Crew.ipynb)
 
+#### Prerequisites
+
+> **⚠️ You will need an OpenAI API key** to run this notebook.
+> Get one at [platform.openai.com](https://platform.openai.com) (requires account, has free credits for new users).
+
+#### What the Notebook Does
+
+| Step | Description |
+|------|-------------|
+| 1 | Install CrewAI framework |
+| 2 | Enter your OpenAI API key |
+| 3 | Create 2 AI agents: Research Analyst & Content Writer |
+| 4 | Define tasks for research and content writing |
+| 5 | Run the crew — agents collaborate automatically |
+| 6 | View the generated article |
+
+The notebook demonstrates how AI agents can work together: one researches a topic, then passes findings to another who writes an article.
+
 ### Installation
 ```bash
 # Clone the repository
