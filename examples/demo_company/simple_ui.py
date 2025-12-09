@@ -157,7 +157,7 @@ def optimize_content_ui(content, progress=gr.Progress()):
 def build_interface():
     """Build the complete Gradio interface"""
     
-    with gr.Blocks(title="AI Workforce OS - Demo Company", theme=gr.themes.Soft()) as demo:
+    with gr.Blocks(title="AI Workforce OS - Demo Company") as demo:
         
         gr.Markdown("""
         # 🤖 AI Workforce OS - Mini Content Agency
