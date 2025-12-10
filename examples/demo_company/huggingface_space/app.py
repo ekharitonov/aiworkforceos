@@ -266,15 +266,12 @@ def get_llm(model_id: str = None, api_key: str = None):
         max_tokens=1024,
     )
 
-def initialize_agency(model_name: str = None, api_key: str = None):
+def initialize_agency(model_name: str = None):
     """Initialize the content agency with selected model"""
     global agency
     try:
-        if not api_key:
-            return "Error: Please enter your HuggingFace API Key"
-
         model_id = AVAILABLE_MODELS.get(model_name, DEFAULT_MODEL)
-        llm = get_llm(model_id=model_id, api_key=api_key)
+        llm = get_llm(model_id=model_id)
         agency = ContentAgency(llm)
         return f"✅ Agency initialized with {model_name}!"
     except Exception as e:
@@ -357,26 +354,19 @@ with gr.Blocks(title="AI Workforce OS - Demo Company") as demo:
     with gr.Accordion("Setup", open=True):
         gr.Markdown("""
         **Quick Start:**
-        1. Enter your [HuggingFace API Key](https://huggingface.co/settings/tokens)
-        2. Select a model
-        3. Click 'Initialize Agency'
+        1. Select a model
+        2. Click 'Initialize Agency'
         """)
 
-        with gr.Row():
-            model_dropdown = gr.Dropdown(
-                choices=list(AVAILABLE_MODELS.keys()),
-                value="Qwen2.5-7B (Recommended)",
-                label="Select Model"
-            )
-            api_key_input = gr.Textbox(
-                label="HuggingFace API Key",
-                placeholder="hf_xxxxxxxxxx",
-                type="password"
-            )
+        model_dropdown = gr.Dropdown(
+            choices=list(AVAILABLE_MODELS.keys()),
+            value="Qwen2.5-7B (Recommended)",
+            label="Select Model"
+        )
 
         init_btn = gr.Button("Initialize Agency", variant="primary")
         init_output = gr.Textbox(label="Status", interactive=False)
-        init_btn.click(initialize_agency, inputs=[model_dropdown, api_key_input], outputs=init_output)
+        init_btn.click(initialize_agency, inputs=[model_dropdown], outputs=init_output)
 
     gr.Markdown("---")
 
